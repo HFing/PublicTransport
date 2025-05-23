@@ -94,6 +94,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public User updateUser(User user, MultipartFile avatar) {
         User existing = userRepo.getUserById(user.getUserId());
+
+        if (avatar == null || avatar.isEmpty()) {
+            throw new IllegalArgumentException("Please select an avatar.");
+        }
+
         if (existing == null) return null;
 
         existing.setEmail(user.getEmail());
