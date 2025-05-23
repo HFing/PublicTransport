@@ -24,7 +24,7 @@ public class AdminUserController {
     public String loginView() {
         return "admin/login";
     }
-    @GetMapping("/dashboard")
+    @GetMapping("/admin")
     public String dashboardView() {
         return "admin/dashboard";
     }

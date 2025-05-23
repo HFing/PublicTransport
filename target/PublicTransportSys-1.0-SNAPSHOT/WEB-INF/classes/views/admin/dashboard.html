@@ -32,7 +32,7 @@
                 <li><a class="dropdown-item" href="#!">Settings</a></li>
                 <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#!">Logout</a></li>
+                <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
             </ul>
         </li>
     </ul>
@@ -43,11 +43,11 @@
             <div class="sb-sidenav-menu">
                 <div class="nav">
                     <div class="sb-sidenav-menu-heading">Core</div>
-                    <a class="nav-link" href="index.html">
+                    <a class="nav-link" href="/admin">
                         <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                         Dashboard
                     </a>
-                    <a class="nav-link" href="">
+                    <a class="nav-link" href="/admin/user">
                         <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                         User
                     </a>
@@ -59,7 +59,7 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
                         Schedules
                     </a>
-                    <a class="nav-link" href="">
+                    <a class="nav-link" href="/admin/route">
                         <div class="sb-nav-link-icon"><i class="fas fa-route"></i></div>
                         Routes
                     </a>
