@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Manage Routes</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link th:href="@{/css/styles.css}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body class="sb-nav-fixed">
 <div th:replace="~{admin/dashboard :: header}"></div>
@@ -37,9 +39,11 @@
                         <td th:text="${r.routeId}"></td>
                         <td th:text="${r.routeName}"></td>
                         <td th:text="${r.transportType}"></td>
+                        <td th:text="${r.createdBy != null ? r.createdBy.email : 'N/A'}"></td>
+
                         <td th:text="${#dates.format(r.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
                         <td>
-                            <a th:href="@{'/admin/route/' + ${r.routeId}}" class="btn btn-success">View</a>
+
                             <a th:href="@{'/admin/route/update/' + ${r.routeId}}" class="btn btn-warning mx-1">Update</a>
                             <a th:href="@{'/admin/route/delete/' + ${r.routeId}}" class="btn btn-danger">Delete</a>
                         </td>

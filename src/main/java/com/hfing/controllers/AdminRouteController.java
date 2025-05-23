@@ -36,6 +36,9 @@ public class AdminRouteController {
     @PostMapping("/create")
     public String createRoute(@ModelAttribute Route route, Principal principal) {
         User currentUser = userService.getUserByUsername(principal.getName());
+        System.out.println("User = " + currentUser.getUserId());
+        System.out.println("Created at = " + route.getCreatedAt());
+
         route.setCreatedBy(currentUser);
         route.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         routeService.saveRoute(route);
@@ -56,8 +59,16 @@ public class AdminRouteController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteRoute(@PathVariable("id") int id) {
+    public String showDeleteConfirmation(@PathVariable("id") int id, Model model) {
+        Route route = routeService.getRouteById(id);
+        model.addAttribute("route", route);
+        return "admin/route/delete";
+    }
+
+    @PostMapping("/delete")
+    public String deleteConfirmed(@RequestParam("id") int id) {
         routeService.deleteRoute(id);
         return "redirect:/admin/route";
     }
+
 }
