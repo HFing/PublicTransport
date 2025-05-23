@@ -1,9 +1,8 @@
-<!-- templates/admin/route/list.html -->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Routes</title>
+    <title>Manage Schedules</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link th:href="@{/css/styles.css}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -15,38 +14,36 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4">Manage Routes</h1>
+                <h1 class="mt-4">Manage Schedules</h1>
                 <ol class="breadcrumb mb-4">
                     <li class="breadcrumb-item"><a th:href="@{/admin}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Routes</li>
+                    <li class="breadcrumb-item active">Schedules</li>
                 </ol>
                 <div class="d-flex justify-content-between mb-3">
-                    <h3>Table Route</h3>
-                    <a th:href="@{/admin/route/create}" class="btn btn-primary">Create</a>
+                    <h3>Table Schedule</h3>
+                    <a th:href="@{/admin/schedule/create}" class="btn btn-primary">Create</a>
                 </div>
                 <table class="table table-hover table-bordered">
                     <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Created By</th>
-                        <th>Created At</th>
+                        <th>Route</th>
+                        <th>Day</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
                         <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="r : ${routes}">
-                        <td th:text="${r.routeId}"></td>
-                        <td th:text="${r.routeName}"></td>
-                        <td th:text="${r.transportType}"></td>
-                        <td th:text="${r.createdBy != null ? r.createdBy.email : 'N/A'}"></td>
-
-                        <td th:text="${#dates.format(r.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    <tr th:each="s : ${schedules}">
+                        <td th:text="${s.scheduleId}"></td>
+                        <td th:text="${s.route != null ? s.route.routeName : 'N/A'}"></td>
+                        <td th:text="${s.dayOfWeek}"></td>
+                        <td th:text="${s.startTime}"></td>
+                        <td th:text="${s.endTime}"></td>
                         <td>
-
-                            <a th:href="@{'/admin/route/update/' + ${r.routeId}}" class="btn btn-warning mx-1">Update</a>
-                            <a th:href="@{'/admin/route/delete/' + ${r.routeId}}" class="btn btn-danger">Delete</a>
+                            <a th:href="@{'/admin/schedule/update/' + ${s.scheduleId}}" class="btn btn-warning mx-1">Update</a>
+                            <a th:href="@{'/admin/schedule/delete/' + ${s.scheduleId}}" class="btn btn-danger">Delete</a>
                         </td>
                     </tr>
                     </tbody>
