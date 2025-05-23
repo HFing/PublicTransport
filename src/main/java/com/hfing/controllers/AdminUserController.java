@@ -86,12 +86,17 @@ public class AdminUserController {
 
     @PostMapping("/admin/user/update")
     public String updateUser(@ModelAttribute("user") User user,
-                             @RequestParam("avatarFile") MultipartFile avatarFile) {
-        userService.updateUser(user, avatarFile);
-        return "redirect:/admin/user";
+                             @RequestParam("avatarFile") MultipartFile avatarFile,
+                             Model model) {
+        try {
+            userService.updateUser(user, avatarFile);
+            return "redirect:/admin/user";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error updating user: " + e.getMessage());
+            model.addAttribute("user", user);
+            return "admin/user/update";
+        }
     }
-
-
 
 
 
