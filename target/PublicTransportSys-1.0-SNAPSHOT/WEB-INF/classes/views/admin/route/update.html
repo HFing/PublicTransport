@@ -21,8 +21,6 @@
                 <div class="col-md-6 col-12 mx-auto">
                     <form th:action="@{/admin/route/update}" method="post" th:object="${route}">
 
-                        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
                         <input type="hidden" th:field="*{routeId}" />
                         <div class="mb-3">
                             <label class="form-label">Route Name:</label>

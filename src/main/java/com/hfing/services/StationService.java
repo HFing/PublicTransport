@@ -9,5 +9,6 @@ public interface StationService {
     List<Station> getAllStations();
     Station getStationById(int id);
     boolean deleteStation(int id);
+    boolean isDuplicateStation(Station station);
 
 }

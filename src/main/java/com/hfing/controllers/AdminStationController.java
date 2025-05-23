@@ -26,7 +26,13 @@ public class AdminStationController {
     }
 
     @PostMapping("/create")
-    public String createStation(@ModelAttribute Station station) {
+    public String createStation(@ModelAttribute Station station, Model model) {
+        if (stationService.isDuplicateStation(station)) {
+            model.addAttribute("station", station);
+            model.addAttribute("errorMessage", "Tên hoặc tọa độ trạm đã tồn tại!");
+            return "admin/station/create";
+        }
+
         stationService.saveStation(station);
         return "redirect:/admin/station";
     }
@@ -39,10 +45,17 @@ public class AdminStationController {
     }
 
     @PostMapping("/update")
-    public String updateStation(@ModelAttribute Station station) {
+    public String updateStation(@ModelAttribute Station station, Model model) {
+        if (stationService.isDuplicateStation(station)) {
+            model.addAttribute("station", station);
+            model.addAttribute("errorMessage", "Tên hoặc tọa độ trạm đã tồn tại!");
+            return "admin/station/update";
+        }
+
         stationService.saveStation(station);
         return "redirect:/admin/station";
     }
+
 
     @GetMapping("/delete/{id}")
     public String showDeleteConfirm(@PathVariable("id") int id, Model model) {

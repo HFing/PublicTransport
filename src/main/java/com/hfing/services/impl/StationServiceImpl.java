@@ -34,4 +34,18 @@ public class StationServiceImpl implements StationService {
         return stationRepo.deleteStation(id);
     }
 
+    @Override
+    public boolean isDuplicateStation(Station station) {
+        List<Station> allStations = this.stationRepo.getAllStations();
+
+        for (Station s : allStations) {
+            if (!s.getStationId().equals(station.getStationId()) &&
+                    (s.getStationName().equalsIgnoreCase(station.getStationName()) ||
+                            (s.getLatitude().equals(station.getLatitude()) && s.getLongitude().equals(station.getLongitude())))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

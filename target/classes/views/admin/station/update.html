@@ -26,6 +26,8 @@
                         <h3>Update Station</h3>
                         <hr />
                         <form th:action="@{/admin/station/update}" method="post" th:object="${station}" class="row">
+                            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
                             <input type="hidden" th:field="*{stationId}" />
 
                             <div class="mb-3 col-md-12">
