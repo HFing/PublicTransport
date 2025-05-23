@@ -54,9 +54,18 @@ public class AdminRouteController {
 
     @PostMapping("/update")
     public String updateRoute(@ModelAttribute Route route) {
-        routeService.updateRoute(route);
+        Route existingRoute = routeService.getRouteById(route.getRouteId());
+
+        if (existingRoute != null) {
+            
+            route.setCreatedBy(existingRoute.getCreatedBy());
+            route.setCreatedAt(existingRoute.getCreatedAt());
+            routeService.updateRoute(route);
+        }
+
         return "redirect:/admin/route";
     }
+
 
     @GetMapping("/delete/{id}")
     public String showDeleteConfirmation(@PathVariable("id") int id, Model model) {

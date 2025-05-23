@@ -17,12 +17,12 @@
                 <h1 class="mt-4">Create User</h1>
                 <ol class="breadcrumb mb-4">
                     <li class="breadcrumb-item"><a th:href="@{/admin}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a th:href="@{/admin/user}">Users</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/route}">Route</a></li>
                     <li class="breadcrumb-item active">Create</li>
                 </ol>
                 <div class="row">
                     <div class="col-md-6 col-12 mx-auto">
-                        <h3>Create a User</h3>
+                        <h3>Create a Route</h3>
                         <hr />
                         <!-- templates/admin/route/create.html -->
                         <form th:action="@{/admin/route/create}" method="post" th:object="${route}">

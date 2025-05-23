@@ -1,3 +1,4 @@
+<!-- src/main/resources/views/admin/user/update.html -->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -25,24 +26,25 @@
                     <div class="col-md-6 col-12 mx-auto">
                         <h3>Update a user</h3>
                         <hr />
+                        <!-- Show backend error if present -->
+                        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
                         <form th:action="@{/admin/user/update}" method="post" th:object="${user}" enctype="multipart/form-data" class="row">
                             <input type="hidden" th:field="*{userId}" />
-                            <input type="hidden" th:field="*{password}" /> <!-- giữ password hiện tại, không cho chỉnh sửa -->
+                            <input type="hidden" th:field="*{password}" />
 
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">Email:</label>
-                                <input type="email" th:field="*{email}" class="form-control" />
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                <input type="email" th:field="*{email}" class="form-control" required />
                             </div>
 
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">First Name:</label>
-                                <input type="text" th:field="*{firstName}" class="form-control" />
+                                <input type="text" th:field="*{firstName}" class="form-control" required />
                             </div>
 
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">Last Name:</label>
-                                <input type="text" th:field="*{lastName}" class="form-control" />
+                                <input type="text" th:field="*{lastName}" class="form-control" required />
                             </div>
 
                             <div class="mb-3 col-md-6">
@@ -52,15 +54,15 @@
 
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">Role:</label>
-                                <select th:field="*{role}" class="form-control">
-                                    <option value="user" th:selected="${user.role == 'user'}">user</option>
-                                    <option value="admin" th:selected="${user.role == 'admin'}">admin</option>
+                                <select th:field="*{role}" class="form-control" required>
+                                    <option value="user">user</option>
+                                    <option value="admin">admin</option>
                                 </select>
                             </div>
 
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">Avatar:</label>
-                                <input type="file" name="avatarFile" accept=".png, .jpg, .jpeg" class="form-control" />
+                                <input type="file" name="avatarFile" accept=".png, .jpg, .jpeg" class="form-control" required />
                             </div>
 
                             <div class="mb-3 col-12">
@@ -72,7 +74,6 @@
                                 <a th:href="@{/admin/user}" class="btn btn-secondary">Cancel</a>
                             </div>
                         </form>
-
                     </div>
                 </div>
             </div>

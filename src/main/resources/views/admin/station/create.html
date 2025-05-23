@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Station</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet" />
+</head>
+<body class="sb-nav-fixed">
+<div th:replace="~{admin/dashboard :: header}"></div>
+<div id="layoutSidenav">
+    <div th:replace="~{admin/dashboard :: sidebar}"></div>
+    <div id="layoutSidenav_content">
+        <main class="container-fluid px-4">
+            <h1 class="mt-4">Create Station</h1>
+            <form th:action="@{/admin/station/create}" method="post" th:object="${station}">
+                <div class="mb-3">
+                    <label class="form-label">Station Name</label>
+                    <input type="text" th:field="*{stationName}" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Latitude</label>
+                    <input type="number" step="any" th:field="*{latitude}" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Longitude</label>
+                    <input type="number" step="any" th:field="*{longitude}" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </main>
+        <div th:replace="~{admin/dashboard :: footer}"></div>
+    </div>
+</div>
+</body>
+</html>
