@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Modal, Badge } from "react-bootstrap";
-import { MdDirectionsBus, MdOutlineArrowForward, MdAccessTime, MdFavoriteBorder, MdToday, MdReport } from "react-icons/md";
+import { MdDirectionsBus, MdOutlineArrowForward, MdAccessTime, MdFavoriteBorder, MdFavorite, MdToday, MdReport } from "react-icons/md";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -9,6 +9,8 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import "./css/RouteResults.css";
+import API, { authApis, endpoints } from "../configs/Apis";
+import { MyUserContext } from "../configs/MyContexts";
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: markerIcon2x,
@@ -21,11 +23,30 @@ const RouteResults = () => {
     const routes = location.state?.routes || [];
     const [showModal, setShowModal] = useState(false);
     const [selectedRoute, setSelectedRoute] = useState(null);
+    const [favoriteRouteIds, setFavoriteRouteIds] = useState([]);
+    const user = useContext(MyUserContext);
+
+    // Lấy danh sách yêu thích
+    useEffect(() => {
+        const fetchFavorites = async () => {
+            try {
+                const res = await authApis().get(endpoints.get_favorite_routes);
+                const ids = res.data.map(item => item.routeId);
+                console.log("Danh sách yêu thích:", ids);
+                setFavoriteRouteIds(ids);
+            } catch (err) {
+                console.error("Lỗi khi lấy danh sách yêu thích:", err);
+            }
+        };
+        fetchFavorites();
+    }, []);
 
     const formatTime = (t) => t?.slice(0, 5);
     const formatDate = (dateStr) => {
         const d = new Date(dateStr);
-        return d.toLocaleDateString("vi-VN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+        return d.toLocaleDateString("vi-VN", {
+            weekday: "long", year: "numeric", month: "long", day: "numeric"
+        });
     };
 
     const openDetail = (route) => {
@@ -33,7 +54,22 @@ const RouteResults = () => {
         setShowModal(true);
     };
 
-    const center = selectedRoute?.stations?.[0] ? [selectedRoute.stations[0].latitude, selectedRoute.stations[0].longitude] : [10.7769, 106.7009];
+    const handleAddFavorite = async (routeId) => {
+        try {
+            await authApis().post(endpoints.add_favorite_route, null, {
+                params: { routeId }
+            });
+            alert("Đã thêm vào yêu thích!");
+            setFavoriteRouteIds(prev => [...prev, routeId]); // cập nhật UI
+        } catch (err) {
+            const msg = err.response?.data || "Thêm vào yêu thích thất bại.";
+            alert(msg);
+        }
+    };
+
+    const center = selectedRoute?.stations?.[0]
+        ? [selectedRoute.stations[0].latitude, selectedRoute.stations[0].longitude]
+        : [10.7769, 106.7009];
 
     return (
         <div className="results-section">
@@ -55,7 +91,16 @@ const RouteResults = () => {
                                             </div>
                                             <div className="d-flex align-items-center gap-2">
                                                 <MdReport size={20} className="text-danger cursor-pointer" />
-                                                <MdFavoriteBorder size={22} className="text-danger cursor-pointer" />
+                                                {favoriteRouteIds.includes(route.routeId) ? (
+                                                    <MdFavorite size={22} className="text-danger" title="Đã yêu thích" />
+                                                ) : (
+                                                    <MdFavoriteBorder
+                                                        size={22}
+                                                        className="text-danger cursor-pointer"
+                                                        title="Thêm vào yêu thích"
+                                                        onClick={() => handleAddFavorite(route.routeId)}
+                                                    />
+                                                )}
                                             </div>
                                         </div>
 
@@ -79,7 +124,11 @@ const RouteResults = () => {
                                             </div>
                                         )}
 
-                                        <Button variant="primary" className="rounded-pill w-100 mt-3" onClick={() => openDetail(route)}>
+                                        <Button
+                                            variant="primary"
+                                            className="rounded-pill w-100 mt-3"
+                                            onClick={() => openDetail(route)}
+                                        >
                                             Xem chi tiết
                                         </Button>
                                     </Card.Body>
@@ -107,14 +156,19 @@ const RouteResults = () => {
                             <h6 className="fw-semibold">Lịch trình:</h6>
                             <ul className="mb-3">
                                 {selectedRoute.schedules.map((s, i) => (
-                                    <li key={i}><MdToday className="me-1" /> {formatDate(s.day)} | <MdAccessTime className="me-1" /> {formatTime(s.startTime)} - {formatTime(s.endTime)}</li>
+                                    <li key={i}>
+                                        <MdToday className="me-1" /> {formatDate(s.day)} |
+                                        <MdAccessTime className="me-1" /> {formatTime(s.startTime)} - {formatTime(s.endTime)}
+                                    </li>
                                 ))}
                             </ul>
 
                             <h6 className="fw-semibold">Trạm dừng:</h6>
                             <ul>
                                 {selectedRoute.stations.map((s, i) => (
-                                    <li key={i}><strong>{s.stationName}</strong> ({s.latitude}, {s.longitude})</li>
+                                    <li key={i}>
+                                        <strong>{s.stationName}</strong> ({s.latitude}, {s.longitude})
+                                    </li>
                                 ))}
                             </ul>
 
