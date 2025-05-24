@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
+import java.sql.Date;
 
 import java.util.List;
 
@@ -28,7 +29,13 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 
     @Override
     public Schedule getScheduleById(int id) {
-        return getSession().get(Schedule.class, id);
+        String hql = "SELECT s FROM Schedule s " +
+                "JOIN FETCH s.route r " +
+                "JOIN FETCH r.routeStations " +
+                "WHERE s.scheduleId = :id";
+        return getSession().createQuery(hql, Schedule.class)
+                .setParameter("id", id)
+                .uniqueResult();
     }
 
     @Override
@@ -51,5 +58,13 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Schedule> getSchedulesFromDate(Date date) {
+        String hql = "FROM Schedule s WHERE s.day >= :date ORDER BY s.day, s.startTime";
+        return getSession().createQuery(hql, Schedule.class)
+                .setParameter("date", date)
+                .getResultList();
     }
 }
