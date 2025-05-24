@@ -3,6 +3,7 @@ package com.hfing.controllers;
 import com.hfing.pojo.Route;
 import com.hfing.pojo.Station;
 import com.hfing.pojo.User;
+import com.hfing.services.FavoriteRouteService;
 import com.hfing.services.RouteService;
 import com.hfing.services.StationService;
 import com.hfing.services.UserService;
@@ -30,6 +31,8 @@ public class ApiUserController {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiUserController.class);
 
+    @Autowired
+    private FavoriteRouteService favoriteRouteService;
 
     @Autowired
     private UserService userDetailsService;
@@ -88,4 +91,48 @@ public class ApiUserController {
         return new ResponseEntity<>(this.userDetailsService.getUserByUsername(principal.getName()), HttpStatus.OK);
     }
 
+
+    @PostMapping("/secure/favorite-routes/add")
+    public ResponseEntity<?> addFavoriteRoute(
+            @RequestParam("routeId") Integer routeId,
+            Principal principal) {
+        try {
+            User user = this.userDetailsService.getUserByUsername(principal.getName());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Người dùng không hợp lệ");
+            }
+            favoriteRouteService.addFavorite(user.getUserId(), routeId);
+            return ResponseEntity.ok("Đã thêm tuyến đường vào danh sách yêu thích");
+        } catch (RuntimeException e) {
+            logger.error("Error adding favorite route", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/secure/favorite-routes/remove")
+    public ResponseEntity<?> removeFavoriteRoute(
+            @RequestParam("routeId") Integer routeId,
+            Principal principal) {
+        try {
+            User user = this.userDetailsService.getUserByUsername(principal.getName());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Người dùng không hợp lệ");
+            }
+            favoriteRouteService.removeFavorite(user.getUserId(), routeId);
+            return ResponseEntity.ok("Đã xóa tuyến đường khỏi danh sách yêu thích");
+        } catch (RuntimeException e) {
+            logger.error("Error removing favorite route", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/secure/favorite-routes")
+    public ResponseEntity<List<Route>> getFavoriteRoutes(Principal principal) {
+        User user = this.userDetailsService.getUserByUsername(principal.getName());
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        List<Route> favoriteRoutes = this.favoriteRouteService.getFavoriteRoutesByUser(user.getUserId());
+        return ResponseEntity.ok(favoriteRoutes);
+    }
 }
