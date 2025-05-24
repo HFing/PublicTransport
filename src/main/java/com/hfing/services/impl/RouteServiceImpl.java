@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,12 @@ public class RouteServiceImpl implements RouteService {
     public Route saveRoute(Route route) {
         return this.routeRepo.addRoute(route);
     }
+
+    @Override
+    public List<Route> searchRoutes(String from, String to, Date day) {
+        return routeRepo.searchRoutes(from, to, day);
+    }
+
 
 }
 

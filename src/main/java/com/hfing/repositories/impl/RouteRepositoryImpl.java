@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -51,6 +52,28 @@ public class RouteRepositoryImpl implements RouteRepository {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Route> searchRoutes(String from, String to, Date day) {
+        String hql = """
+        SELECT DISTINCT r
+        FROM Route r
+        JOIN r.routeStations rsFrom
+        JOIN r.routeStations rsTo
+        JOIN r.schedules s
+        WHERE rsFrom.station.stationName = :from
+          AND rsTo.station.stationName = :to
+          AND rsFrom.stopOrder < rsTo.stopOrder
+          AND s.day = :day
+    """;
+
+        return getSession()
+                .createQuery(hql, Route.class)
+                .setParameter("from", from)
+                .setParameter("to", to)
+                .setParameter("day", day)
+                .getResultList();
     }
 
 

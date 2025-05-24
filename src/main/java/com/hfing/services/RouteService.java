@@ -1,6 +1,8 @@
 package com.hfing.services;
 
 import com.hfing.pojo.Route;
+
+import java.sql.Date;
 import java.util.List;
 
 public interface RouteService {
@@ -11,4 +13,6 @@ public interface RouteService {
     Route saveRoute(Route route);
     Route updateRoute(Route route);
     boolean deleteRoute(int id);
+    List<Route> searchRoutes(String from, String to, Date day);
+
 }

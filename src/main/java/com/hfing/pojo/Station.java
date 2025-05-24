@@ -1,5 +1,6 @@
 package com.hfing.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
@@ -22,6 +23,7 @@ public class Station implements Serializable {
     private Double longitude;
 
     @OneToMany(mappedBy = "station")
+    @JsonIgnore
     private Set<RouteStation> routeStations;
 
     public Station(Integer stationId, String stationName, Double latitude, Double longitude) {

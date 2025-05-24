@@ -8,4 +8,6 @@ public interface StationRepository {
     List<Station> getAllStations();
     Station getStationById(int id);
     boolean deleteStation(int id);
+    List<Station> searchStationsByKeyword(String keyword);
+
 }

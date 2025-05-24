@@ -10,5 +10,5 @@ public interface StationService {
     Station getStationById(int id);
     boolean deleteStation(int id);
     boolean isDuplicateStation(Station station);
-
+    List<Station> searchStations(String keyword);
 }

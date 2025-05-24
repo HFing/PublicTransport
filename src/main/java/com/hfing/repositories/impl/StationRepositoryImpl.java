@@ -50,4 +50,14 @@ public class StationRepositoryImpl implements StationRepository {
         }
         return false;
     }
+
+    @Override
+    public List<Station> searchStationsByKeyword(String keyword) {
+        String hql = "FROM Station s WHERE s.stationName LIKE :kw";
+        return getSession()
+                .createQuery(hql, Station.class)
+                .setParameter("kw", "%" + keyword + "%")
+                .getResultList();
+    }
+
 }

@@ -48,4 +48,10 @@ public class StationServiceImpl implements StationService {
         return false;
     }
 
+    @Override
+    public List<Station> searchStations(String keyword) {
+        return stationRepo.searchStationsByKeyword(keyword);
+    }
+
+
 }
