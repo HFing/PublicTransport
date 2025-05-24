@@ -20,7 +20,7 @@
                 </ol>
                 <div class="row mt-5">
                     <div class="col-md-6 col-12 mx-auto">
-                        <h4 th:text="'Are you sure to delete schedule for route: ' + ${schedule.route.routeName} + ' on ' + ${schedule.dayOfWeek} + '?'"></h4>
+                        <h4 th:text="'Are you sure to delete schedule for route: ' + ${schedule.route.routeName} + ' on ' + ${#dates.format(schedule.day, 'yyyy-MM-dd')} + '?'"></h4>
                         <form th:action="@{/admin/schedule/delete}" method="post">
                             <input type="hidden" name="id" th:value="${schedule.scheduleId}" />
                             <button type="submit" class="btn btn-danger mt-3">Confirm Delete</button>

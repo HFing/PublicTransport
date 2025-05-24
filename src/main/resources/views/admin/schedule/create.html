@@ -28,10 +28,8 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Day of Week:</label>
-                            <select th:field="*{dayOfWeek}" class="form-control">
-                                <option th:each="d : ${T(com.hfing.pojo.Schedule.DayOfWeek).values()}" th:value="${d}" th:text="${d}"></option>
-                            </select>
+                            <label class="form-label">Day:</label>
+                            <input type="date" th:field="*{day}" class="form-control" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Start Time:</label>

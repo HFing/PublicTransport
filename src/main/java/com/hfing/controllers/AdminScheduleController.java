@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.beans.PropertyEditorSupport;
 import java.sql.Time;
+import java.sql.Date;
 import java.util.List;
 
 @Controller
@@ -27,7 +28,6 @@ public class AdminScheduleController {
     @Autowired
     private ScheduleService scheduleService;
 
-    // Improved binder for java.sql.Time and Route fields
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Time.class, new PropertyEditorSupport() {
@@ -41,6 +41,17 @@ public class AdminScheduleController {
                         value += ":00";
                     }
                     setValue(Time.valueOf(value));
+                }
+            }
+        });
+
+        binder.registerCustomEditor(Date.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.isEmpty()) {
+                    setValue(null);
+                } else {
+                    setValue(Date.valueOf(text));
                 }
             }
         });
