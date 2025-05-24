@@ -29,6 +29,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        Session s = this.factory.getObject().getCurrentSession();
+        String hql = "SELECT COUNT(u) FROM User u WHERE u.email = :email";
+        Long count = (Long) s.createQuery(hql)
+                .setParameter("email", email)
+                .uniqueResult();
+        return count != null && count > 0;
+    }
+
+    @Override
     public User getUserByUsername(String username) {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createNamedQuery("User.findByEmail", User.class);

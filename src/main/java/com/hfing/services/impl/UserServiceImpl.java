@@ -58,10 +58,15 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User addUser(Map<String, String> params, MultipartFile avatar) {
+        String email = params.get("email");
+        if (userRepo.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists");
+        }
+
         User user = new User();
         user.setFirstName(params.get("firstName"));
         user.setLastName(params.get("lastName"));
-        user.setEmail(params.get("email"));
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(params.get("password")));
         user.setRole(User.Role.valueOf(params.get("role")));
         user.setActive(true);
