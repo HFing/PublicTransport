@@ -28,17 +28,14 @@ public class ApiUserController {
             @RequestParam("from") String from,
             @RequestParam("to") String to,
             @RequestParam("date") String dateStr) {
-
         try {
-            // Tự parse và kiểm soát lỗi
-            Date date = Date.valueOf(dateStr); // định dạng phải là yyyy-MM-dd
-            System.out.printf("DEBUG: from=%s | to=%s | date=%s\n", from, to, date);
+            Date date = Date.valueOf(dateStr);
             return ResponseEntity.ok(routeService.searchRoutes(from.trim(), to.trim(), date));
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().body("Sai định dạng ngày. Phải là yyyy-MM-dd");
         }
     }
+
 
 
 

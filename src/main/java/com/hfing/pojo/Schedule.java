@@ -1,5 +1,6 @@
 package com.hfing.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
@@ -15,6 +16,7 @@ public class Schedule implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "route_id")
+    @JsonIgnoreProperties("schedules")
     private Route route;
 
     @Column(name = "start_time")
@@ -24,7 +26,7 @@ public class Schedule implements Serializable {
     private Time endTime;
 
     @Column(name = "day")
-    private Date day;  // đổi từ Enum sang java.sql.Date
+    private Date day;
 
     public Schedule(Integer scheduleId, Route route, Time startTime, Time endTime, Date day) {
         this.scheduleId = scheduleId;

@@ -59,13 +59,23 @@ public class RouteRepositoryImpl implements RouteRepository {
         String hql = """
         SELECT DISTINCT r
         FROM Route r
-        JOIN r.routeStations rsFrom
-        JOIN r.routeStations rsTo
-        JOIN r.schedules s
-        WHERE rsFrom.station.stationName = :from
-          AND rsTo.station.stationName = :to
-          AND rsFrom.stopOrder < rsTo.stopOrder
-          AND s.day = :day
+        JOIN FETCH r.schedules s
+        JOIN FETCH r.routeStations rs
+        JOIN FETCH rs.station st
+        WHERE EXISTS (
+            SELECT 1 FROM RouteStation rsFrom
+            WHERE rsFrom.route = r AND rsFrom.station.stationName = :from
+        )
+        AND EXISTS (
+            SELECT 1 FROM RouteStation rsTo
+            WHERE rsTo.route = r AND rsTo.station.stationName = :to
+              AND rsTo.stopOrder > (
+                  SELECT rsFrom2.stopOrder
+                  FROM RouteStation rsFrom2
+                  WHERE rsFrom2.route = r AND rsFrom2.station.stationName = :from
+              )
+        )
+        AND s.day = :day
     """;
 
         return getSession()
@@ -75,6 +85,8 @@ public class RouteRepositoryImpl implements RouteRepository {
                 .setParameter("day", day)
                 .getResultList();
     }
+
+
 
 
 }
