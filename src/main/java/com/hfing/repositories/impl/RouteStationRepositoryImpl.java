@@ -38,6 +38,15 @@ public class RouteStationRepositoryImpl implements RouteStationRepository {
     }
 
     @Override
+    public List<RouteStation> getByRouteId(int routeId) {
+        String hql = "FROM RouteStation rs WHERE rs.route.id = :routeId ORDER BY rs.stopOrder ASC";
+        return getSession()
+                .createQuery(hql, RouteStation.class)
+                .setParameter("routeId", routeId)
+                .getResultList();
+    }
+
+    @Override
     public RouteStation update(RouteStation rs) {
         getSession().merge(rs);
         return rs;

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin/route-station")
 public class AdminRouteStationController {
@@ -39,7 +41,28 @@ public class AdminRouteStationController {
     @PostMapping("/create")
     public String create(@RequestParam("routeId") int routeId,
                          @RequestParam("stationId") int stationId,
-                         @RequestParam("stopOrder") int stopOrder) {
+                         @RequestParam("stopOrder") int stopOrder,
+                         Model model) {
+
+        List<RouteStation> existing = routeStationService.getByRouteId(routeId);
+
+        boolean exists = existing.stream().anyMatch(rs -> rs.getStopOrder().equals(stopOrder));
+        if (exists) {
+            model.addAttribute("error", "Stop order already exists for this route.");
+            model.addAttribute("routeStation", new RouteStation());
+            model.addAttribute("routes", routeService.getRoutes());
+            model.addAttribute("stations", stationService.getAllStations());
+            return "admin/route-station/create";
+        }
+
+        int maxOrder = existing.stream().mapToInt(RouteStation::getStopOrder).max().orElse(0);
+        if (stopOrder != maxOrder + 1) {
+            model.addAttribute("error", "Stop order must be consecutive. Next should be: " + (maxOrder + 1));
+            model.addAttribute("routeStation", new RouteStation());
+            model.addAttribute("routes", routeService.getRoutes());
+            model.addAttribute("stations", stationService.getAllStations());
+            return "admin/route-station/create";
+        }
 
         RouteStation rs = new RouteStation();
         rs.setRoute(routeService.getRouteById(routeId));
@@ -58,7 +81,6 @@ public class AdminRouteStationController {
         return "admin/route-station/update";
     }
 
-
     @PostMapping("/update")
     public String update(@ModelAttribute RouteStation rs) {
         routeStationService.update(rs);
@@ -69,7 +91,7 @@ public class AdminRouteStationController {
     public String deleteConfirm(@PathVariable("id") int id, Model model) {
         RouteStation rs = routeStationService.getById(id);
         model.addAttribute("routeStation", rs);
-        return "admin/route-station/delete"; // đúng path file
+        return "admin/route-station/delete";
     }
 
     @PostMapping("/delete")
@@ -77,5 +99,4 @@ public class AdminRouteStationController {
         routeStationService.delete(id);
         return "redirect:/admin/route-station";
     }
-
 }

@@ -21,6 +21,8 @@
                 </ol>
                 <div class="row">
                     <div class="col-md-6 col-12 mx-auto">
+                        <!-- Error message block -->
+                        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
                         <form th:action="@{/admin/route-station/create}" method="post">
                             <label>Route:</label>
                             <select name="routeId" class="form-control" required>
@@ -37,7 +39,6 @@
 
                             <button type="submit" class="btn btn-primary mt-3">Create</button>
                         </form>
-
                     </div>
                 </div>
             </div>

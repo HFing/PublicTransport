@@ -38,4 +38,10 @@ public class RouteStationServiceImpl implements RouteStationService {
     public boolean delete(int id) {
         return routeStationRepo.delete(id);
     }
+
+    @Override
+    public List<RouteStation> getByRouteId(int routeId) {
+        return routeStationRepo.getByRouteId(routeId);
+    }
 }
+

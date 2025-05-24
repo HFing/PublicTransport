@@ -9,4 +9,5 @@ public interface  RouteStationService {
     RouteStation getById(int id);
     RouteStation update(RouteStation rs);
     boolean delete(int id);
+    List<RouteStation> getByRouteId(int routeId);
 }
