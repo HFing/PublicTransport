@@ -2,6 +2,7 @@ package com.hfing.pojo;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Time;
 
 @Entity
@@ -22,21 +23,17 @@ public class Schedule implements Serializable {
     @Column(name = "end_time")
     private Time endTime;
 
-    public enum DayOfWeek {
-        Mon, Tue, Wed, Thu, Fri, Sat, Sun
-    }
+    @Column(name = "day")
+    private Date day;  // đổi từ Enum sang java.sql.Date
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "day_of_week")
-    private DayOfWeek dayOfWeek;
-
-    public Schedule(Integer scheduleId, Route route, Time startTime, Time endTime, DayOfWeek dayOfWeek) {
+    public Schedule(Integer scheduleId, Route route, Time startTime, Time endTime, Date day) {
         this.scheduleId = scheduleId;
         this.route = route;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.dayOfWeek = dayOfWeek;
+        this.day = day;
     }
+
     public Schedule() {
     }
 
@@ -72,12 +69,11 @@ public class Schedule implements Serializable {
         this.endTime = endTime;
     }
 
-    public DayOfWeek getDayOfWeek() {
-        return dayOfWeek;
+    public Date getDay() {
+        return day;
     }
 
-    public void setDayOfWeek(DayOfWeek dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
+    public void setDay(Date day) {
+        this.day = day;
     }
 }
-
