@@ -13,5 +13,6 @@ public interface UserService extends UserDetailsService {
     User getUserById(int id);
     void deleteUserById(int id);
     User updateUser(User user, MultipartFile avatar);
+    boolean authenticate(String username, String password);
 
 }

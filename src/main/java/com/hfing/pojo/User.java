@@ -1,5 +1,6 @@
 package com.hfing.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -52,12 +53,15 @@ public class User implements Serializable {
     private Timestamp createdAt;
 
     @OneToMany(mappedBy = "createdBy")
+    @JsonIgnore
     private Set<Route> routesCreated;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private Set<FavoriteRoute> favoriteRoutes;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private Set<Notification> notifications;
 
     public User() {

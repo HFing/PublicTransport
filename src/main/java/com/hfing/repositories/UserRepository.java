@@ -13,7 +13,7 @@ public interface UserRepository {
     User getUserById(int id);
     void deleteUser(User user);
     User updateUser(User user);
-
     boolean existsByEmail(String email);
+    boolean authenticate(String username, String password);
 
 }

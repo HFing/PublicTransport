@@ -62,16 +62,24 @@ public class SpringSecurityConfigs {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**", "/login").hasAuthority("admin")
+                        // Cho phép truy cập tự do vào các API cho React frontend
+                        .requestMatchers("/api/**").permitAll()
+
+                        // Yêu cầu quyền admin với /admin/**
+                        .requestMatchers("/admin/**").hasAuthority("admin")
+
+                        // Các request còn lại cho phép tất cả
                         .anyRequest().permitAll()
                 )
-                .sessionManagement(sessionManagement -> sessionManagement
+                .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                         .invalidSessionUrl("/logout?expired")
                         .maximumSessions(1)
-                        .maxSessionsPreventsLogin(false))
+                        .maxSessionsPreventsLogin(false)
+                )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/admin", true)
@@ -81,8 +89,8 @@ public class SpringSecurityConfigs {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
+                        .permitAll()
                 );
-
         return http.build();
     }
 

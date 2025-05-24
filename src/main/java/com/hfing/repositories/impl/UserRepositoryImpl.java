@@ -41,9 +41,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getUserByUsername(String username) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createNamedQuery("User.findByEmail", User.class);
+        Query q = s.createNamedQuery("User.findByEmail", User.class); // dùng email
         q.setParameter("email", username);
-
         return (User) q.getSingleResult();
     }
 
@@ -71,5 +70,11 @@ public class UserRepositoryImpl implements UserRepository {
         Session s = factory.getObject().getCurrentSession();
         s.update(u);
         return u;
+    }
+
+    @Override
+    public boolean authenticate(String username, String password) {
+        User u = this.getUserByUsername(username);
+        return this.passwordEncoder.matches(password, u.getPassword());
     }
 }

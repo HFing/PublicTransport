@@ -40,7 +40,7 @@ public class JwtFilter implements Filter{
                         return;
                     }
                 } catch (Exception e) {
-                    // Log lỗi
+                    e.printStackTrace();
                 }
             }
 

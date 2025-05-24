@@ -38,7 +38,7 @@
                     <tr th:each="s : ${schedules}">
                         <td th:text="${s.scheduleId}"></td>
                         <td th:text="${s.route != null ? s.route.routeName : 'N/A'}"></td>
-                        <td th:text="${s.dayOfWeek}"></td>
+                        <td th:text="${#dates.format(s.day, 'yyyy-MM-dd')}"></td>
                         <td th:text="${s.startTime}"></td>
                         <td th:text="${s.endTime}"></td>
                         <td>
