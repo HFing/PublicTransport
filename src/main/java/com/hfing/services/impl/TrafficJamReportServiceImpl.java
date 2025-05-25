@@ -31,4 +31,10 @@ public class TrafficJamReportServiceImpl implements TrafficJamReportService {
 
         reportRepo.saveReport(report);
     }
+
+    @Override
+    public TrafficJamReport getReportById(int id) {
+        return reportRepo.getReportById(id);
+    }
+
 }

@@ -1,0 +1,59 @@
+<!-- admin/trafficjam/list.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Traffic Jam Reports</title>
+  <link th:href="@{/css/styles.css}" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body class="sb-nav-fixed">
+<div th:replace="~{admin/dashboard :: header}"></div>
+<div id="layoutSidenav">
+  <div th:replace="~{admin/dashboard :: sidebar}"></div>
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4">Traffic Jam Reports</h1>
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item"><a th:href="@{/admin}">Dashboard</a></li>
+          <li class="breadcrumb-item active">Traffic Jams</li>
+        </ol>
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Report List
+          </div>
+          <div class="card-body">
+            <table class="table table-hover table-bordered">
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Location</th>
+                <th>Time</th>
+                <th>Detail</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="r : ${reports}">
+                <td th:text="${r.id}"></td>
+                <td th:text="${r.user != null ? r.user.userId : 'N/A'}"></td>
+                <td th:text="${r.location}"></td>
+                <td th:text="${#dates.format(r.reportTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                  <a th:href="@{'/admin/trafficjam/' + ${r.id}}" class="btn btn-info btn-sm">Detail</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div th:replace="~{admin/dashboard :: footer}"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
