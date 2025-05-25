@@ -31,6 +31,9 @@ public class ApiUserController {
     private static final Logger logger = LoggerFactory.getLogger(ApiUserController.class);
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private TrafficJamReportService trafficService;
 
     @Autowired
@@ -167,5 +170,23 @@ public class ApiUserController {
             return ResponseEntity.status(400).body("Lỗi khi gửi báo cáo: " + e.getMessage());
         }
     }
+
+    @PostMapping("/secure/notifications/update")
+    public ResponseEntity<?> updateNotify(
+            @RequestParam("routeId") int routeId,
+            @RequestParam("notifyOnChanges") boolean notifyOnChanges,
+            Principal principal
+    ) {
+        String email = principal.getName();
+        User user = userDetailsService.getUserByUsername(email);
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        boolean updated = notificationService.updateNotifySetting(user.getUserId(), routeId, notifyOnChanges);
+        if (updated)
+            return ResponseEntity.ok("Đã cập nhật thông báo.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể cập nhật.");
+    }
+
 }
 
