@@ -14,6 +14,7 @@ export const endpoints = {
     get_favorite_routes: "/secure/favorite-routes",
     report_traffic: "/secure/traffic-report",
     update_notification: "/secure/notifications/update",
+    get_notifications: "/secure/notifications",
 
 
 
