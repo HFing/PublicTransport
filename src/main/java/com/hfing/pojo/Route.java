@@ -41,9 +41,11 @@ public class Route implements Serializable {
     private Timestamp createdAt;
 
     @OneToMany(mappedBy = "route")
+    @JsonIgnore
     private Set<Schedule> schedules;
 
     @OneToMany(mappedBy = "route")
+    @JsonIgnore
     private Set<RouteStation> routeStations;
 
     @OneToMany(mappedBy = "route")

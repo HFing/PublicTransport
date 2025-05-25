@@ -1,5 +1,6 @@
 package com.hfing.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import com.hfing.pojo.User;
@@ -14,10 +15,12 @@ public class FavoriteRoute implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "route_id")
+    @JsonIgnore
     private Route route;
 
     public FavoriteRoute(Integer id, User user, Route route) {
