@@ -15,5 +15,5 @@ public interface UserService extends UserDetailsService {
     User updateUser(User user, MultipartFile avatar);
     boolean authenticate(String username, String password);
     User addUserFromGoogle(User user);
-
+    long countUsers();
 }

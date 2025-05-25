@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private Cloudinary cloudinary;
 
+
     @Override
     public User getUserByUsername(String username) {
         return this.userRepo.getUserByUsername(username);
@@ -140,5 +141,8 @@ public class UserServiceImpl implements UserService{
         return userRepo.addUser(user);
     }
 
-
+    @Override
+    public long countUsers() {
+        return userRepo.countUsers();
+    }
 }

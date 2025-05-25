@@ -99,6 +99,15 @@ public class RouteServiceImpl implements RouteService {
 
 
 
+    @Override
+    public long countRoutes() {
+        return routeRepo.countRoutes();
+    }
+
+    @Override
+    public Map<String, Long> countByTransportType() {
+        return routeRepo.countByTransportType();
+    }
 
 
 

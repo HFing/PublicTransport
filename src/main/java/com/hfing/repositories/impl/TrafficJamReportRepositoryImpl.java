@@ -42,4 +42,11 @@ public class TrafficJamReportRepositoryImpl implements TrafficJamReportRepositor
         System.out.println("Fetched reports: " + reports.size());
         return reports;
     }
+
+    @Override
+    public long countReports() {
+        return this.getSession()
+                .createQuery("SELECT COUNT(t) FROM TrafficJamReport t", Long.class)
+                .getSingleResult();
+    }
 }

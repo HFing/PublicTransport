@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -38,4 +39,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     public boolean deleteSchedule(int id) {
         return scheduleRepository.deleteSchedule(id);
     }
+
+    @Override
+    public long countSchedules() {
+        return scheduleRepository.countSchedules();
+    }
+
+    @Override
+    public Map<String, Long> countSchedulesByRoute() {
+        return scheduleRepository.countSchedulesByRoute();
+    }
+
 }

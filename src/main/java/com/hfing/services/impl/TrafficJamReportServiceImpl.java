@@ -37,4 +37,8 @@ public class TrafficJamReportServiceImpl implements TrafficJamReportService {
         return reportRepo.getReportById(id);
     }
 
+    @Override
+    public long countReports() {
+        return reportRepo.countReports();
+    }
 }

@@ -78,4 +78,11 @@ public class UserRepositoryImpl implements UserRepository {
         User u = this.getUserByUsername(username);
         return this.passwordEncoder.matches(password, u.getPassword());
     }
+
+    @Override
+    public long countUsers() {
+        return this.factory.getObject().getCurrentSession()
+                .createQuery("SELECT COUNT(u) FROM User u", Long.class)
+                .getSingleResult();
+    }
 }

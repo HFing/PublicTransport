@@ -14,7 +14,9 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @Transactional
@@ -50,7 +52,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     public Schedule addSchedule(Schedule schedule) {
 
         Route route = getSession().get(Route.class, schedule.getRoute().getRouteId());
-        schedule.setRoute(route); // Gán lại route đã đầy đủ
+        schedule.setRoute(route);
 
         getSession().persist(schedule);
 
@@ -94,4 +96,25 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
                 .setParameter("date", date)
                 .getResultList();
     }
+
+    @Override
+    public long countSchedules() {
+        return this.getSession()
+                .createQuery("SELECT COUNT(s) FROM Schedule s", Long.class)
+                .getSingleResult();
+    }
+
+    @Override
+    public Map<String, Long> countSchedulesByRoute() {
+        List<Object[]> results = getSession()
+                .createQuery("SELECT s.route.routeName, COUNT(s) FROM Schedule s GROUP BY s.route.routeName", Object[].class)
+                .getResultList();
+
+        Map<String, Long> map = new LinkedHashMap<>();
+        for (Object[] row : results) {
+            map.put((String) row[0], (Long) row[1]);
+        }
+        return map;
+    }
+
 }

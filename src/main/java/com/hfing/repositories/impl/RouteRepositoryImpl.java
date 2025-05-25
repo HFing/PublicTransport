@@ -9,7 +9,9 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @Transactional
@@ -86,6 +88,26 @@ public class RouteRepositoryImpl implements RouteRepository {
                 .getResultList();
     }
 
+
+    @Override
+    public long countRoutes() {
+        return this.getSession()
+                .createQuery("SELECT COUNT(r) FROM Route r", Long.class)
+                .getSingleResult();
+    }
+
+    @Override
+    public Map<String, Long> countByTransportType() {
+        List<Object[]> results = getSession()
+                .createQuery("SELECT r.transportType, COUNT(r) FROM Route r GROUP BY r.transportType", Object[].class)
+                .getResultList();
+
+        Map<String, Long> map = new LinkedHashMap<>();
+        for (Object[] row : results) {
+            map.put(row[0].toString(), (Long) row[1]);
+        }
+        return map;
+    }
 
 
 

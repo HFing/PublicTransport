@@ -5,6 +5,7 @@ import com.hfing.pojo.dto.RouteDTO;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface RouteService {
     List<Route> getRoutes();
@@ -15,5 +16,8 @@ public interface RouteService {
     Route updateRoute(Route route);
     boolean deleteRoute(int id);
     public List<RouteDTO> searchRoutes(String from, String to, Date day);
+    long countRoutes();
+    Map<String, Long> countByTransportType();
+
 
 }

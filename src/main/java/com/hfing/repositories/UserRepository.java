@@ -15,5 +15,5 @@ public interface UserRepository {
     User updateUser(User user);
     boolean existsByEmail(String email);
     boolean authenticate(String username, String password);
-
+    long countUsers();
 }

@@ -2,6 +2,9 @@ package com.hfing.controllers;
 
 import com.cloudinary.Cloudinary;
 import com.hfing.pojo.User;
+import com.hfing.services.RouteService;
+import com.hfing.services.ScheduleService;
+import com.hfing.services.TrafficJamReportService;
 import com.hfing.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,12 +23,47 @@ public class AdminUserController {
     @Autowired
     private Cloudinary cloudinary;
 
+    @Autowired
+    private RouteService routeService;
+
+    @Autowired
+    private TrafficJamReportService trafficJamReportService;
+
+    @Autowired
+    private ScheduleService scheduleService;
+
     @GetMapping("/login")
     public String loginView() {
         return "admin/login";
     }
     @GetMapping("/admin")
-    public String dashboardView() {
+    public String dashboardView(Model model) {
+        long userCount = userService.countUsers();
+        long routeCount = routeService.countRoutes();
+        long reportCount = trafficJamReportService.countReports();
+        long scheduleCount = scheduleService.countSchedules();
+
+        // data biểu đồ 1 - TransportType
+        Map<String, Long> transportStats = routeService.countByTransportType();
+        model.addAttribute("transportLabels", transportStats.keySet());
+        model.addAttribute("transportValues", transportStats.values());
+
+        // data biểu đồ 2 - Schedules per Route
+        Map<String, Long> scheduleStats = scheduleService.countSchedulesByRoute();
+        model.addAttribute("routeLabels", scheduleStats.keySet());
+        model.addAttribute("routeValues", scheduleStats.values());
+
+
+        model.addAttribute("userCount", userCount);
+        model.addAttribute("routeCount", routeCount);
+        model.addAttribute("reportCount", reportCount);
+        model.addAttribute("scheduleCount", scheduleCount);
+
+
+        System.out.println("transportLabels = " + transportStats.keySet());
+        System.out.println("transportValues = " + transportStats.values());
+
+
         return "admin/dashboard";
     }
 
