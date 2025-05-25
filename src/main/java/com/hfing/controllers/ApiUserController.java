@@ -4,7 +4,9 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.hfing.pojo.Route;
 import com.hfing.pojo.Station;
+import com.hfing.pojo.SystemNotification;
 import com.hfing.pojo.User;
+import com.hfing.repositories.SystemNotificationRepository;
 import com.hfing.services.*;
 import com.hfing.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,9 @@ public class ApiUserController {
 
     @Autowired
     private StationService stationService;
+
+    @Autowired
+    private SystemNotificationRepository systemNotificationRepository;
 
     @GetMapping("/routes/search")
     public ResponseEntity<?> searchRoutes(
@@ -187,6 +192,17 @@ public class ApiUserController {
             return ResponseEntity.ok("Đã cập nhật thông báo.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể cập nhật.");
     }
+
+    @GetMapping("/secure/notifications")
+    public ResponseEntity<?> getUserNotifications(Principal principal) {
+        User user = userService.getUserByUsername(principal.getName());
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Không xác thực");
+
+        List<SystemNotification> notifs = systemNotificationRepository.findByUserId(user.getUserId());
+        return ResponseEntity.ok(notifs);
+    }
+
 
 }
 
