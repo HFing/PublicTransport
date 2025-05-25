@@ -1,6 +1,7 @@
 package com.hfing.repositories.impl;
 
 import com.hfing.pojo.Notification;
+import com.hfing.pojo.Route;
 import com.hfing.pojo.Schedule;
 import com.hfing.pojo.SystemNotification;
 import com.hfing.repositories.NotificationRepository;
@@ -12,6 +13,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import java.sql.Date;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -46,14 +48,23 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 
     @Override
     public Schedule addSchedule(Schedule schedule) {
+
+        Route route = getSession().get(Route.class, schedule.getRoute().getRouteId());
+        schedule.setRoute(route); // Gán lại route đã đầy đủ
+
         getSession().persist(schedule);
 
-        List<Notification> notifies = notificationRepository.getUsersByRoute(schedule.getRoute().getRouteId());
+        List<Notification> notifies = notificationRepository.getUsersByRoute(route.getRouteId());
         for (Notification notify : notifies) {
             if (Boolean.TRUE.equals(notify.getNotifyOnChanges())) {
                 SystemNotification sys = new SystemNotification();
                 sys.setUser(notify.getUser());
-                sys.setContent("Tuyến " + schedule.getRoute().getRouteName() + " có lịch trình mới.");
+                sys.setTitle("Lịch trình mới cho tuyến " + route.getRouteName());
+                sys.setContent("Tuyến " + route.getRouteName() + " có lịch trình mới."
+                        + " Ngày: " + schedule.getDay()
+                        + ", Giờ bắt đầu: " + schedule.getStartTime()
+                        + ", Giờ kết thúc: " + schedule.getEndTime());
+                sys.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
                 getSession().persist(sys);
             }
         }

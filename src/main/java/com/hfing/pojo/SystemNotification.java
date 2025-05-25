@@ -2,6 +2,7 @@ package com.hfing.pojo;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,17 +26,15 @@ public class SystemNotification implements Serializable {
     private Boolean isRead = false;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Timestamp createdAt;
 
     public SystemNotification() {
     }
-    public SystemNotification(Integer id, User user, String title, String content, Boolean isRead, LocalDateTime createdAt) {
-        this.id = id;
+    public SystemNotification(User user, String title, String content) {
         this.user = user;
         this.title = title;
         this.content = content;
-        this.isRead = isRead;
-        this.createdAt = createdAt;
+        this.createdAt = Timestamp.valueOf(LocalDateTime.now());
     }
 
     public Integer getId() {
@@ -78,11 +77,11 @@ public class SystemNotification implements Serializable {
         isRead = read;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 }
