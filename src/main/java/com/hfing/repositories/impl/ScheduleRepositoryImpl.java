@@ -39,7 +39,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     public Schedule getScheduleById(int id) {
         String hql = "SELECT s FROM Schedule s " +
                 "JOIN FETCH s.route r " +
-                "JOIN FETCH r.routeStations " +
+                "LEFT JOIN FETCH r.routeStations " +
                 "WHERE s.scheduleId = :id";
         return getSession().createQuery(hql, Schedule.class)
                 .setParameter("id", id)
