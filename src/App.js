@@ -6,6 +6,7 @@ import RouteResults from "./components/RouteResults";
 import Register from "./components/Register";
 import Header from "./components/layouts/Header";
 import Footer from "./components/layouts/Footer";
+import FavoriteRoutesPage from "./components/FavoriteRoutesPage";
 import Login from "./components/Login";
 import "bootstrap/dist/css/bootstrap.min.css";
 import 'leaflet/dist/leaflet.css';
@@ -27,6 +28,7 @@ function App() {
             <Route path="/routes" element={<RouteResults />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<FavoriteRoutesPage />} />
           </Routes>
 
           <Footer />

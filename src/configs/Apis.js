@@ -13,6 +13,8 @@ export const endpoints = {
     remove_favorite_route: "/secure/favorite-routes/remove",
     get_favorite_routes: "/secure/favorite-routes",
     report_traffic: "/secure/traffic-report",
+    update_notification: "/secure/notifications/update",
+
 
 
 };

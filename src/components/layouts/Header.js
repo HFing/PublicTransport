@@ -58,7 +58,8 @@ function Header() {
                         >
                             {user ? (
                                 <>
-                                    <NavDropdown.Item href="#">Thông tin cá nhân</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/profile">Thông tin cá nhân</NavDropdown.Item>
+
                                     <NavDropdown.Item onClick={logout}>Đăng xuất</NavDropdown.Item>
                                 </>
                             ) : (
