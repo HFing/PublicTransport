@@ -23,15 +23,16 @@ public class TrafficJamReportRepositoryImpl implements TrafficJamReportRepositor
     public void saveReport(TrafficJamReport report) {
         getSession().save(report);
     }
+    
 
     @Override
     public TrafficJamReport getReportById(int id) {
-        TrafficJamReport report = getSession().get(TrafficJamReport.class, id);
-        if (report != null && report.getUser() != null) {
-            // Use the correct getter for User's ID
-            report.getUser().getUserId();
-        }
-        return report;
+        String hql = "FROM TrafficJamReport r JOIN FETCH r.user WHERE r.id = :id";
+        List<TrafficJamReport> results = getSession()
+                .createQuery(hql, TrafficJamReport.class)
+                .setParameter("id", id)
+                .getResultList();
+        return results.isEmpty() ? null : results.get(0);
     }
 
     @Override

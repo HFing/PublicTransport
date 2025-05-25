@@ -26,7 +26,11 @@ public class AdminTrafficJamController {
     @GetMapping("/admin/trafficjam/{id}")
     public String trafficJamDetail(@PathVariable("id") int id, Model model) {
         TrafficJamReport report = reportRepository.getReportById(id);
-        System.out.println("Fetched report: " + report); // Debug line
+        System.out.println("Fetched report: " + report);
+        if (report != null) {
+            System.out.println("Image URL: " + report.getImageUrl());
+            System.out.println("Report Time: " + report.getReportTime());
+        }
         model.addAttribute("report", report);
         return "admin/trafficjam/detail";
     }
