@@ -1,12 +1,11 @@
 package com.hfing.controllers;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.hfing.pojo.Route;
 import com.hfing.pojo.Station;
 import com.hfing.pojo.User;
-import com.hfing.services.FavoriteRouteService;
-import com.hfing.services.RouteService;
-import com.hfing.services.StationService;
-import com.hfing.services.UserService;
+import com.hfing.services.*;
 import com.hfing.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -30,6 +29,15 @@ import org.slf4j.LoggerFactory;
 public class ApiUserController {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiUserController.class);
+
+    @Autowired
+    private TrafficJamReportService trafficService;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private FavoriteRouteService favoriteRouteService;
@@ -135,4 +143,29 @@ public class ApiUserController {
         List<Route> favoriteRoutes = this.favoriteRouteService.getFavoriteRoutesByUser(user.getUserId());
         return ResponseEntity.ok(favoriteRoutes);
     }
+
+    @PostMapping("/secure/traffic-report")
+    public ResponseEntity<?> createTrafficReport(
+            @RequestParam("location") String location,
+            @RequestParam("description") String description,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            Principal principal
+    ) {
+        try {
+            User user = userService.getUserByUsername(principal.getName());
+            if (user == null) return ResponseEntity.status(401).body("Không tìm thấy người dùng");
+
+            String imageUrl = null;
+            if (image != null && !image.isEmpty()) {
+                Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+                imageUrl = uploadResult.get("url").toString();
+            }
+
+            trafficService.reportTrafficJam(user.getUserId(), location, description, imageUrl);
+            return ResponseEntity.ok("Đã gửi báo cáo");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Lỗi khi gửi báo cáo: " + e.getMessage());
+        }
+    }
 }
+
