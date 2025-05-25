@@ -8,6 +8,7 @@ import L from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import axios from "axios";
 import "./css/RouteResults.css";
 import API, { authApis, endpoints } from "../configs/Apis";
 import { MyUserContext } from "../configs/MyContexts";
@@ -29,6 +30,8 @@ const RouteResults = () => {
     const [showReportModal, setShowReportModal] = useState(false);
     const [reportData, setReportData] = useState({ location: '', description: '', image: null });
     const [reportLoading, setReportLoading] = useState(false);
+    const [routedPath, setRoutedPath] = useState([]);
+    const [routeDistance, setRouteDistance] = useState(0);
     const user = useContext(MyUserContext);
 
     useEffect(() => {
@@ -48,6 +51,46 @@ const RouteResults = () => {
     const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("vi-VN", {
         weekday: "long", year: "numeric", month: "long", day: "numeric"
     });
+
+    const getRoutedPath = async (coordinates) => {
+        const apiKey = "5b3ce3597851110001cf62485be25b215d2b44a197893840f3ee5ec2";
+        const url = "https://api.openrouteservice.org/v2/directions/driving-car/geojson";
+        try {
+            const res = await axios.post(
+                url,
+                {
+                    coordinates: coordinates.map(([lat, lng]) => [lng, lat])
+                },
+                {
+                    headers: {
+                        Authorization: apiKey,
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+            const distanceMeters = res.data.features[0].properties.summary.distance;
+            setRouteDistance(distanceMeters / 1000); // convert to km
+            return res.data.features[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+        } catch (err) {
+            console.error("Lỗi khi lấy tuyến đường:", err);
+            setRouteDistance(0);
+            return [];
+        }
+    };
+
+    useEffect(() => {
+        const fetchRoute = async () => {
+            if (selectedRoute?.stations?.length > 1) {
+                const coords = selectedRoute.stations.map(s => [s.latitude, s.longitude]);
+                const path = await getRoutedPath(coords);
+                setRoutedPath(path);
+            } else {
+                setRoutedPath([]);
+                setRouteDistance(0);
+            }
+        };
+        fetchRoute();
+    }, [selectedRoute]);
 
     const openDetail = (route) => {
         setSelectedRoute(route);
@@ -212,6 +255,8 @@ const RouteResults = () => {
                                 ))}
                             </ul>
 
+                            <h6 className="fw-semibold mt-3">Tổng quãng đường: {routeDistance.toFixed(2)} km</h6>
+
                             <div className="mt-3" style={{ height: "300px", width: "100%" }}>
                                 <MapContainer center={center} zoom={14} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
                                     <TileLayer
@@ -223,7 +268,9 @@ const RouteResults = () => {
                                             <Popup>{s.stationName}</Popup>
                                         </Marker>
                                     ))}
-                                    <Polyline positions={selectedRoute.stations.map(s => [s.latitude, s.longitude])} color="blue" />
+                                    {routedPath.length > 0 && (
+                                        <Polyline positions={routedPath} color="blue" weight={4} smoothFactor={1} />
+                                    )}
                                 </MapContainer>
                             </div>
                         </div>
