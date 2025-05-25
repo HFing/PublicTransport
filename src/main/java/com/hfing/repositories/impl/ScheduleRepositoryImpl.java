@@ -1,6 +1,9 @@
 package com.hfing.repositories.impl;
 
+import com.hfing.pojo.Notification;
 import com.hfing.pojo.Schedule;
+import com.hfing.pojo.SystemNotification;
+import com.hfing.repositories.NotificationRepository;
 import com.hfing.repositories.ScheduleRepository;
 import jakarta.transaction.Transactional;
 import org.hibernate.Session;
@@ -17,6 +20,9 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     private Session getSession() {
         return this.factory.getObject().getCurrentSession();
@@ -41,6 +47,16 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     @Override
     public Schedule addSchedule(Schedule schedule) {
         getSession().persist(schedule);
+
+        List<Notification> notifies = notificationRepository.getUsersByRoute(schedule.getRoute().getRouteId());
+        for (Notification notify : notifies) {
+            if (Boolean.TRUE.equals(notify.getNotifyOnChanges())) {
+                SystemNotification sys = new SystemNotification();
+                sys.setUser(notify.getUser());
+                sys.setContent("Tuyến " + schedule.getRoute().getRouteName() + " có lịch trình mới.");
+                getSession().persist(sys);
+            }
+        }
         return schedule;
     }
 

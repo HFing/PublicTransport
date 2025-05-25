@@ -59,4 +59,14 @@ public class NotificationRepositoryImpl implements NotificationRepository {
         }
         return true;
     }
+
+    @Override
+    public List<Notification> getUsersByRoute(int routeId) {
+        String hql = "FROM Notification n WHERE n.route.routeId = :routeId";
+        return getSession()
+                .createQuery(hql, Notification.class)
+                .setParameter("routeId", routeId)
+                .getResultList();
+    }
+
 }
