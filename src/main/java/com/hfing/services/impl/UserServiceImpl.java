@@ -130,6 +130,15 @@ public class UserServiceImpl implements UserService{
         return this.userRepo.authenticate(username, password);
     }
 
+    @Override
+    public User addUserFromGoogle(User user) {
+        if (userRepo.existsByEmail(user.getEmail())) {
+            return userRepo.getUserByUsername(user.getEmail());
+        }
+
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        return userRepo.addUser(user);
+    }
 
 
 }
