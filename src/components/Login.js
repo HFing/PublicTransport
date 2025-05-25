@@ -5,6 +5,8 @@ import cookie from "react-cookies";
 
 import API, { authApis, endpoints } from "../configs/Apis";
 import { MyDispatcherContext } from "../configs/MyContexts";
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
     const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -28,12 +30,13 @@ const Login = () => {
             cookie.save("token", token, { path: "/" });
 
             const userRes = await authApis().get(endpoints["current_user"]);
-            const user = userRes.data;
 
+            const user = userRes.data;
             cookie.save("user", JSON.stringify(user), { path: "/" });
 
-            dispatch({ type: "login", payload: user });
 
+
+            dispatch({ type: "login", payload: user });
             navigate("/");
         } catch (err) {
             if (err.response) {
@@ -50,6 +53,29 @@ const Login = () => {
             }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async (credentialResponse) => {
+        try {
+            const tokenId = credentialResponse.credential;
+            const decoded = jwtDecode(tokenId);
+            console.log("Google info:", decoded);
+
+            const res = await API.post(endpoints["google_login"], { token: tokenId });
+            const token = res.data.token;
+            cookie.save("token", token, { path: "/" });
+
+            const userRes = await authApis().get(endpoints["current_user"]);
+            const user = userRes.data;
+            console.log("Current user từ backend:", userRes.data);
+            cookie.save("user", JSON.stringify(user), { path: "/" });
+
+            dispatch({ type: "login", payload: user });
+            navigate("/");
+        } catch (err) {
+            console.error("Google login error:", err);
+            setError("Đăng nhập bằng Google thất bại.");
         }
     };
 
@@ -94,6 +120,14 @@ const Login = () => {
                             )}
                         </Button>
                     </Form>
+
+                    <div className="mt-3 text-center">
+                        <GoogleLogin
+                            onSuccess={handleGoogleLogin}
+                            onError={() => setError("Đăng nhập bằng Google thất bại")}
+                            width="100%"
+                        />
+                    </div>
                 </Col>
             </Row>
         </Container>

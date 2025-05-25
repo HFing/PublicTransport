@@ -15,7 +15,7 @@ export const endpoints = {
     report_traffic: "/secure/traffic-report",
     update_notification: "/secure/notifications/update",
     get_notifications: "/secure/notifications",
-
+    google_login: "auth/google",
 
 
 };
