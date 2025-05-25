@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Modal, Badge } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Modal, Badge, Form, Spinner } from "react-bootstrap";
 import { MdDirectionsBus, MdOutlineArrowForward, MdAccessTime, MdFavoriteBorder, MdFavorite, MdToday, MdReport } from "react-icons/md";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -11,6 +11,8 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import "./css/RouteResults.css";
 import API, { authApis, endpoints } from "../configs/Apis";
 import { MyUserContext } from "../configs/MyContexts";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: markerIcon2x,
@@ -24,15 +26,16 @@ const RouteResults = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedRoute, setSelectedRoute] = useState(null);
     const [favoriteRouteIds, setFavoriteRouteIds] = useState([]);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportData, setReportData] = useState({ location: '', description: '', image: null });
+    const [reportLoading, setReportLoading] = useState(false);
     const user = useContext(MyUserContext);
 
-    // Lấy danh sách yêu thích
     useEffect(() => {
         const fetchFavorites = async () => {
             try {
                 const res = await authApis().get(endpoints.get_favorite_routes);
                 const ids = res.data.map(item => item.routeId);
-                console.log("Danh sách yêu thích:", ids);
                 setFavoriteRouteIds(ids);
             } catch (err) {
                 console.error("Lỗi khi lấy danh sách yêu thích:", err);
@@ -42,40 +45,68 @@ const RouteResults = () => {
     }, []);
 
     const formatTime = (t) => t?.slice(0, 5);
-    const formatDate = (dateStr) => {
-        const d = new Date(dateStr);
-        return d.toLocaleDateString("vi-VN", {
-            weekday: "long", year: "numeric", month: "long", day: "numeric"
-        });
-    };
+    const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("vi-VN", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
 
     const openDetail = (route) => {
         setSelectedRoute(route);
         setShowModal(true);
     };
 
-    const handleAddFavorite = async (routeId) => {
+    const handleToggleFavorite = async (routeId) => {
+        const isFavorite = favoriteRouteIds.includes(routeId);
         try {
-            await authApis().post(endpoints.add_favorite_route, null, {
-                params: { routeId }
-            });
-            alert("Đã thêm vào yêu thích!");
-            setFavoriteRouteIds(prev => [...prev, routeId]); // cập nhật UI
+            if (isFavorite) {
+                await authApis().post(endpoints.remove_favorite_route, null, { params: { routeId } });
+                setFavoriteRouteIds(prev => prev.filter(id => id !== routeId));
+                toast.info("Đã bỏ yêu thích tuyến đường", { autoClose: 5000 });
+            } else {
+                await authApis().post(endpoints.add_favorite_route, null, { params: { routeId } });
+                setFavoriteRouteIds(prev => [...prev, routeId]);
+                toast.success("Đã thêm vào yêu thích", { autoClose: 5000 });
+            }
         } catch (err) {
-            const msg = err.response?.data || "Thêm vào yêu thích thất bại.";
-            alert(msg);
+            const msg = err.response?.data || "Lỗi thao tác yêu thích.";
+            toast.error(msg, { autoClose: 5000 });
         }
     };
 
-    const center = selectedRoute?.stations?.[0]
-        ? [selectedRoute.stations[0].latitude, selectedRoute.stations[0].longitude]
-        : [10.7769, 106.7009];
+    const handleReportSubmit = async () => {
+        const formData = new FormData();
+        formData.append("location", reportData.location);
+        formData.append("description", reportData.description);
+        if (reportData.image) formData.append("image", reportData.image);
+
+        setReportLoading(true);
+        try {
+            await authApis().post(endpoints.report_traffic, formData);
+            toast.success("Đã gửi báo cáo", { autoClose: 5000 });
+            setShowReportModal(false);
+            setReportData({ location: '', description: '', image: null });
+        } catch (err) {
+            toast.error("Lỗi khi gửi báo cáo", { autoClose: 5000 });
+        } finally {
+            setReportLoading(false);
+        }
+    };
+
+    const center = selectedRoute?.stations?.[0] ? [selectedRoute.stations[0].latitude, selectedRoute.stations[0].longitude] : [10.7769, 106.7009];
 
     return (
-        <div className="results-section">
+        <div className="results-section position-relative">
+            {reportLoading && (
+                <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center" style={{ zIndex: 9999 }}>
+                    <Spinner animation="border" variant="light" className="me-3" />
+                    <span className="text-white fs-5">Đang gửi báo cáo...</span>
+                </div>
+            )}
+
             <div className="results-banner">
                 <h2 className="text-white fw-bold text-center py-4">Danh sách các chuyến đi</h2>
             </div>
+
+            <ToastContainer position="top-right" />
 
             <Container className="my-5">
                 {routes.length > 0 ? (
@@ -90,15 +121,28 @@ const RouteResults = () => {
                                                 <h5 className="mb-0 fw-semibold">{route.routeName}</h5>
                                             </div>
                                             <div className="d-flex align-items-center gap-2">
-                                                <MdReport size={20} className="text-danger cursor-pointer" />
+                                                <MdReport
+                                                    size={20}
+                                                    className="text-danger cursor-pointer"
+                                                    title="Báo cáo"
+                                                    onClick={() => {
+                                                        setShowReportModal(true);
+                                                        setReportData({ location: route.routeName, description: '', image: null });
+                                                    }}
+                                                />
                                                 {favoriteRouteIds.includes(route.routeId) ? (
-                                                    <MdFavorite size={22} className="text-danger" title="Đã yêu thích" />
+                                                    <MdFavorite
+                                                        size={22}
+                                                        className="text-danger cursor-pointer"
+                                                        title="Bỏ yêu thích"
+                                                        onClick={() => handleToggleFavorite(route.routeId)}
+                                                    />
                                                 ) : (
                                                     <MdFavoriteBorder
                                                         size={22}
                                                         className="text-danger cursor-pointer"
                                                         title="Thêm vào yêu thích"
-                                                        onClick={() => handleAddFavorite(route.routeId)}
+                                                        onClick={() => handleToggleFavorite(route.routeId)}
                                                     />
                                                 )}
                                             </div>
@@ -109,7 +153,7 @@ const RouteResults = () => {
                                             Phương tiện: <strong>{route.transportType}</strong>
                                         </p>
 
-                                        {route.schedules && route.schedules.length > 0 && (
+                                        {route.schedules?.length > 0 && (
                                             <div className="mb-2">
                                                 <div className="fw-semibold mb-1">
                                                     <MdToday className="me-1" /> {formatDate(route.schedules[0].day)}
@@ -124,11 +168,7 @@ const RouteResults = () => {
                                             </div>
                                         )}
 
-                                        <Button
-                                            variant="primary"
-                                            className="rounded-pill w-100 mt-3"
-                                            onClick={() => openDetail(route)}
-                                        >
+                                        <Button variant="primary" className="rounded-pill w-100 mt-3" onClick={() => openDetail(route)}>
                                             Xem chi tiết
                                         </Button>
                                     </Card.Body>
@@ -183,15 +223,51 @@ const RouteResults = () => {
                                             <Popup>{s.stationName}</Popup>
                                         </Marker>
                                     ))}
-                                    <Polyline
-                                        positions={selectedRoute.stations.map(s => [s.latitude, s.longitude])}
-                                        color="blue"
-                                    />
+                                    <Polyline positions={selectedRoute.stations.map(s => [s.latitude, s.longitude])} color="blue" />
                                 </MapContainer>
                             </div>
                         </div>
                     )}
                 </Modal.Body>
+            </Modal>
+
+            <Modal show={showReportModal} onHide={() => setShowReportModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Báo cáo tuyến đường</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Vị trí</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={reportData.location}
+                            onChange={(e) => setReportData({ ...reportData, location: e.target.value })}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Mô tả</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={reportData.description}
+                            onChange={(e) => setReportData({ ...reportData, description: e.target.value })}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Hình ảnh</Form.Label>
+                        <Form.Control
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setReportData({ ...reportData, image: e.target.files[0] })}
+                        />
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowReportModal(false)}>Hủy</Button>
+                    <Button variant="danger" onClick={handleReportSubmit} disabled={reportLoading}>
+                        {reportLoading ? (<><Spinner animation="border" size="sm" className="me-2" /> Đang gửi...</>) : "Gửi báo cáo"}
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </div>
     );
