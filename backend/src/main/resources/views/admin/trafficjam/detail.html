@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Traffic Jam Detail</title>
+  <link th:href="@{/css/styles.css}" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" crossorigin="anonymous"></script>
+</head>
+<body class="sb-nav-fixed">
+<div th:replace="~{admin/dashboard :: header}"></div>
+<div id="layoutSidenav">
+  <div th:replace="~{admin/dashboard :: sidebar}"></div>
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4">Traffic Jam Detail</h1>
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item"><a th:href="@{/admin}">Dashboard</a></li>
+          <li class="breadcrumb-item"><a th:href="@{/admin/trafficjams}">Traffic Jams</a></li>
+          <li class="breadcrumb-item active">Detail</li>
+        </ol>
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-info-circle me-1"></i>
+            Report Information
+          </div>
+          <div class="card-body">
+            <p><b>User ID:</b>
+              <span th:if="${report.user != null}" th:text="${report.user.userId}"></span>
+              <span th:unless="${report.user != null}">N/A</span>
+            </p>
+            <p><b>Location:</b> <span th:text="${report.location}"></span></p>
+            <p><b>Description:</b>
+              <span th:utext="${#strings.replace(report.description, '\n', '<br/>')}"></span>
+            </p>
+
+            <div class="mb-3 col-12">
+              <span th:if="${report.imageUrl != null and not #strings.isEmpty(report.imageUrl)}">
+                  <img th:src="${report.imageUrl}"
+                       style="max-width:300px; height:auto; border: 1px solid #ddd; padding: 5px;"
+                       alt="Traffic Jam Image" />
+              </span>
+              <span th:unless="${report.imageUrl != null and not #strings.isEmpty(report.imageUrl)}">
+                  No image available
+              </span>
+            </div>
+
+            <p><b>Report Time:</b>
+              <span th:if="${report.reportTime != null}" th:text="${#dates.format(report.reportTime, 'yyyy-MM-dd HH:mm')}"></span>
+              <span th:unless="${report.reportTime != null}">N/A</span>
+            </p>
+
+            <a th:href="@{/admin/trafficjams}" class="btn btn-secondary mt-3">Back to Reports</a>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div th:replace="~{admin/dashboard :: footer}"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

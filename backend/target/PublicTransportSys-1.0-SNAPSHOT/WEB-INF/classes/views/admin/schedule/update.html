@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Schedule</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet" />
+</head>
+<body class="sb-nav-fixed">
+<div th:replace="~{admin/dashboard :: header}"></div>
+<div id="layoutSidenav">
+    <div th:replace="~{admin/dashboard :: sidebar}"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4">Update Schedule</h1>
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a th:href="@{/admin}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/schedule}">Schedules</a></li>
+                    <li class="breadcrumb-item active">Update</li>
+                </ol>
+                <div class="col-md-6 col-12 mx-auto">
+                    <form th:action="@{/admin/schedule/update}" method="post" th:object="${schedule}">
+                        <input type="hidden" th:field="*{scheduleId}" />
+                        <div class="mb-3">
+                            <label class="form-label">Route:</label>
+                            <select th:field="*{route.routeId}" class="form-control">
+                                <option th:each="r : ${routes}" th:value="${r.routeId}" th:text="${r.routeName}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Day:</label>
+                            <input type="date" th:field="*{day}" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Start Time:</label>
+                            <input type="time" th:field="*{startTime}" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End Time:</label>
+                            <input type="time" th:field="*{endTime}" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <a th:href="@{/admin/schedule}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <div th:replace="~{admin/dashboard :: footer}"></div>
+    </div>
+</div>
+</body>
+</html>

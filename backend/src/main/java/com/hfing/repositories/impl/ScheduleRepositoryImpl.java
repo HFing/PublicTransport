@@ -1,0 +1,120 @@
+package com.hfing.repositories.impl;
+
+import com.hfing.pojo.Notification;
+import com.hfing.pojo.Route;
+import com.hfing.pojo.Schedule;
+import com.hfing.pojo.SystemNotification;
+import com.hfing.repositories.NotificationRepository;
+import com.hfing.repositories.ScheduleRepository;
+import jakarta.transaction.Transactional;
+import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.stereotype.Repository;
+import java.sql.Date;
+
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+@Repository
+@Transactional
+public class ScheduleRepositoryImpl implements ScheduleRepository {
+
+    @Autowired
+    private LocalSessionFactoryBean factory;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    private Session getSession() {
+        return this.factory.getObject().getCurrentSession();
+    }
+
+    @Override
+    public List<Schedule> getSchedules() {
+        return getSession().createQuery("FROM Schedule", Schedule.class).getResultList();
+    }
+
+    @Override
+    public Schedule getScheduleById(int id) {
+        String hql = "SELECT s FROM Schedule s " +
+                "JOIN FETCH s.route r " +
+                "LEFT JOIN FETCH r.routeStations " +
+                "WHERE s.scheduleId = :id";
+        return getSession().createQuery(hql, Schedule.class)
+                .setParameter("id", id)
+                .uniqueResult();
+    }
+
+    @Override
+    public Schedule addSchedule(Schedule schedule) {
+
+        Route route = getSession().get(Route.class, schedule.getRoute().getRouteId());
+        schedule.setRoute(route);
+
+        getSession().persist(schedule);
+
+        List<Notification> notifies = notificationRepository.getUsersByRoute(route.getRouteId());
+        for (Notification notify : notifies) {
+            if (Boolean.TRUE.equals(notify.getNotifyOnChanges())) {
+                SystemNotification sys = new SystemNotification();
+                sys.setUser(notify.getUser());
+                sys.setTitle("Lịch trình mới cho tuyến " + route.getRouteName());
+                sys.setContent("Tuyến " + route.getRouteName() + " có lịch trình mới."
+                        + " Ngày: " + schedule.getDay()
+                        + ", Giờ bắt đầu: " + schedule.getStartTime()
+                        + ", Giờ kết thúc: " + schedule.getEndTime());
+                sys.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+                getSession().persist(sys);
+            }
+        }
+        return schedule;
+    }
+
+    @Override
+    public Schedule updateSchedule(Schedule schedule) {
+        getSession().merge(schedule);
+        return schedule;
+    }
+
+    @Override
+    public boolean deleteSchedule(int id) {
+        Schedule schedule = getScheduleById(id);
+        if (schedule != null) {
+            getSession().remove(schedule);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<Schedule> getSchedulesFromDate(Date date) {
+        String hql = "FROM Schedule s WHERE s.day >= :date ORDER BY s.day, s.startTime";
+        return getSession().createQuery(hql, Schedule.class)
+                .setParameter("date", date)
+                .getResultList();
+    }
+
+    @Override
+    public long countSchedules() {
+        return this.getSession()
+                .createQuery("SELECT COUNT(s) FROM Schedule s", Long.class)
+                .getSingleResult();
+    }
+
+    @Override
+    public Map<String, Long> countSchedulesByRoute() {
+        List<Object[]> results = getSession()
+                .createQuery("SELECT s.route.routeName, COUNT(s) FROM Schedule s GROUP BY s.route.routeName", Object[].class)
+                .getResultList();
+
+        Map<String, Long> map = new LinkedHashMap<>();
+        for (Object[] row : results) {
+            map.put((String) row[0], (Long) row[1]);
+        }
+        return map;
+    }
+
+}

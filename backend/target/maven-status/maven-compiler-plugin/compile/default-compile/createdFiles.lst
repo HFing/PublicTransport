@@ -1,0 +1,6 @@
+com\hfing\configs\WebAppContextConfigs.class
+com\hfing\publictransportsys\resources\JakartaEE11Resource.class
+com\hfing\configs\ThymeleafConfig.class
+com\hfing\configs\DispatcherServletInit.class
+com\hfing\publictransportsys\JakartaRestConfiguration.class
+com\hfing\controllers\HelloController.class
