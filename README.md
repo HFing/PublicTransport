@@ -1,13 +1,13 @@
 # 🚍 Public Transport System
 
-Hệ thống quản lý và tra cứu giao thông công cộng, bao gồm:
-- **Backend**: Spring (Web MVC, ORM, Security) build dưới dạng WAR deploy lên Tomcat/Jetty/Glassfish...
-- **Frontend**: React + Bootstrap + Leaflet (hiển thị bản đồ, tra cứu tuyến xe buýt).
+A public transport management and lookup system, including:
+- **Backend**: Spring (Web MVC, ORM, Security), packaged as a WAR for deployment on Tomcat/Jetty/Glassfish.
+- **Frontend**: React + Bootstrap + Leaflet for displaying maps and bus routes.
 
+---
 
-## 📂 Cấu trúc repo
+## 📂 Repository Structure
 ```
-
 PublicTransport/
 │── backend/    # Java Maven (Spring MVC, Hibernate, Security, MySQL)
 │
@@ -15,92 +15,96 @@ PublicTransport/
 │
 ├── .gitignore
 └── README.md
+```
 
 ---
 
-## ⚙️ Yêu cầu môi trường
+## ⚙️ Requirements
 
 ### Backend (Java)
 - JDK **17+**
 - Maven **3.9+**
 - MySQL **8.0+**
-- Application server (Tomcat/Jetty) **hoặc** chạy Spring Boot trực tiếp (`spring-boot-starter` nếu cấu hình embedded)
+- Application server (Tomcat/Jetty) **or** run directly with Spring Boot (`spring-boot-starter` if configured)
 
-**Cấu hình DB (MySQL):**
+**Database setup (MySQL):**
 
 
-Trong `src/main/resources/application.properties` (nếu có):
+In `src/main/resources/application.properties` (if available):
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/public_transport
-spring.datasource.username=transport_user
-spring.datasource.password=password123
+spring.datasource.username=yourusername
+spring.datasource.password=yourpassword
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 ```
 
+---
 
 ### Frontend (React)
 - Node.js **20+**
-- Yarn **hoặc** npm
+- Yarn or npm
 
 ---
 
-## ▶️ Cách chạy
+## ▶️ How to Run
 
 ### Backend
 ```bash
 cd backend
-# build WAR
+# build the WAR
 mvn clean package
 
+# run the app (if Spring Boot embedded is configured)
+mvn spring-boot:run
+```
 
-Server sẽ chạy ở:  
-👉 [http://localhost:8080](http://localhost:8080)
+Backend will run at:  
+👉 http://localhost:8080
 
 ---
 
 ### Frontend
 ```bash
 cd frontend
-# cài dependencies
+# install dependencies
 npm install
-# hoặc
+# or
 yarn install
 
-# chạy dev server
+# run dev server
 npm start
 ```
 
-Server sẽ chạy ở:  
-👉 [http://localhost:3000](http://localhost:3000)
+Frontend will run at:  
+👉 http://localhost:3000
 
 ---
 
-
-## 🔐 Tích hợp bảo mật
-- Sử dụng **Spring Security 6** (JWT + Session).
-- Thư viện `nimbus-jose-jwt` để xử lý token.
-- `thymeleaf-extras-springsecurity6` hỗ trợ UI bảo mật với Thymeleaf.
+## 🔐 Security
+- Uses **Spring Security 6** (JWT + Session).
+- `nimbus-jose-jwt` for token handling.
+- `thymeleaf-extras-springsecurity6` for secure Thymeleaf integration.
 
 ---
 
-## 🗺️ Tích hợp bản đồ
-- Frontend dùng **React-Leaflet** + **Google Map React** để hiển thị vị trí trạm, tuyến đường.
-- Config API Key qua file `.env`:
+## 🗺️ Map Integration
+- Frontend uses **React-Leaflet** + **Google Map React** to display stations and routes.
+- Configure API Key in `.env`:
 ```env
 REACT_APP_GOOGLE_MAPS_KEY=your_api_key_here
 ```
 
 ---
 
-## 🛠️ Công nghệ chính
+## 🛠️ Tech Stack
 
 ### Backend
 - Spring MVC, Spring ORM, Spring Security
 - Hibernate
 - MySQL
 - Jakarta EE APIs (Servlet, JSP)
-- Cloudinary SDK (upload hình ảnh)
+- Cloudinary SDK (image upload)
 - Google API Client
 
 ### Frontend
@@ -112,8 +116,7 @@ REACT_APP_GOOGLE_MAPS_KEY=your_api_key_here
 - React Toastify
 
 ---
----
 
 ## 👥 Contributors
-- HFing (Nguyễn Thái Hoàng) – Backend (Team Lead)
-- ThangTB5 – Frontend
+- **HFing (Nguyễn Thái Hoàng)** – Backend (Team Lead)
+- **ThangTB5** – Frontend
