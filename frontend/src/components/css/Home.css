@@ -1,0 +1,47 @@
+/* src/components/Home.css */
+.hero-section {
+    background: url("/public/banner.jpg") top center/cover no-repeat;
+    padding-top: 60px;
+    padding-bottom: 30px;
+    height: 800px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.search-container {
+    background-color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 2rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    max-width: 1132px;
+    width: 90%;
+    margin: auto;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #dee2e6;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    width: 100%;
+}
+
+.typeahead.no-border-focus:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+
+.search-btn {
+    background-color: #d32f2f;
+    border: none;
+}
+
+
+.input-wrapper .rbt-input-main {
+    border: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    padding-left: 0;
+}
